@@ -7,7 +7,7 @@
 // versione qui sotto (es. "chirone-v1" -> "chirone-v2"). Questo forza il
 // service worker a scaricare di nuovo il file e a sostituire la copia
 // offline salvata sul dispositivo dell'utente.
-const CACHE_VERSION = "chirone-v1";
+const CACHE_VERSION = "chirone-v2";
 
 const PRECACHE_URLS = [
   "./",
