@@ -14883,6 +14883,85 @@ if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.
   });
 }
 </script>
+<script>
+// Pulsante "Installa l'app", visibile direttamente dentro Chirone,
+// così non serve andare a cercarlo nei menu nascosti del browser.
+(function(){
+  var deferredInstallPrompt = null;
+  var btn = null;
+
+  function creaPulsante(){
+    if (btn) return btn;
+    btn = document.createElement('button');
+    btn.id = 'installa-app-btn';
+    btn.innerHTML = '📲 Installa l\'app';
+    btn.style.cssText = [
+      'position:fixed', 'bottom:20px', 'left:20px', 'z-index:9999',
+      'height:44px', 'padding:0 18px', 'border:none', 'border-radius:999px',
+      'background:#B8842E', 'color:#fff', 'font-weight:700', 'font-size:0.9rem',
+      'font-family:system-ui,-apple-system,\'Segoe UI\',Roboto,sans-serif',
+      'box-shadow:0 1px 2px rgba(32,38,59,0.15), 0 4px 14px rgba(32,38,59,0.15)',
+      'cursor:pointer', 'display:none'
+    ].join(';');
+    document.body.appendChild(btn);
+    return btn;
+  }
+
+  function mostraPulsante(){
+    creaPulsante();
+    btn.style.display = 'block';
+  }
+
+  function nascondiPulsante(){
+    if (btn) btn.style.display = 'none';
+  }
+
+  // Se l'app è già stata installata ed è aperta in modalità standalone,
+  // non ha senso mostrare il pulsante.
+  var giaInstallata = window.matchMedia('(display-mode: standalone)').matches
+    || window.navigator.standalone === true;
+
+  if (!giaInstallata){
+    // Chrome, Edge, e la maggior parte dei browser Android: questo evento
+    // parte da solo quando il browser riconosce che il sito è installabile.
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+      mostraPulsante();
+    });
+
+    // iOS Safari non supporta l'installazione automatica: mostriamo
+    // comunque il pulsante, che spiegherà come fare manualmente.
+    var iOS = /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+    if (iOS){
+      mostraPulsante();
+    }
+
+    window.addEventListener('appinstalled', () => {
+      nascondiPulsante();
+      deferredInstallPrompt = null;
+    });
+
+    window.addEventListener('load', () => {
+      creaPulsante();
+      btn.addEventListener('click', async () => {
+        if (deferredInstallPrompt){
+          deferredInstallPrompt.prompt();
+          const scelta = await deferredInstallPrompt.userChoice;
+          deferredInstallPrompt = null;
+          if (scelta.outcome === 'accepted'){
+            nascondiPulsante();
+          }
+        } else if (iOS) {
+          alert('Per installare Chirone su iPhone/iPad:\n\n1. Tocca l\'icona di condivisione (il quadrato con la freccia verso l\'alto, in basso nello schermo)\n2. Scorri e scegli "Aggiungi a Home"\n3. Conferma con "Aggiungi"');
+        } else {
+          alert('Il browser non offre ancora l\'installazione automatica per questo sito. Cerca nel menu del browser una voce come "Installa app" o "Aggiungi a schermata Home".');
+        }
+      });
+    });
+  }
+})();
+</script>
 </body>
 </html>
 
