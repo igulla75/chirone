@@ -4,10 +4,10 @@
 //
 // IMPORTANTE PER CHI AGGIORNA IL CONTENUTO:
 // Ogni volta che index.html viene modificato, aumentare il numero di
-// versione qui sotto (es. "chirone-v1" -> "chirone-v65"). Questo forza il
+// versione qui sotto (es. "chirone-v1" -> "chirone-v71"). Questo forza il
 // service worker a scaricare di nuovo il file e a sostituire la copia
 // offline salvata sul dispositivo dell'utente.
-const CACHE_VERSION = "chirone-v65";
+const CACHE_VERSION = "chirone-v71";
 
 const PRECACHE_URLS = [
   "./",
